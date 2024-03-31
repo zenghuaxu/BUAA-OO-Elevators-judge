@@ -1,6 +1,10 @@
 import json
 import random
 
+# Passenger numbers:
+RANDOM_NUM = True
+MAX_NUM = 2000
+MAX_TIME = 20
 
 MAX_FLOOR = 11
 MIN_FLOOR = 1
@@ -13,7 +17,7 @@ PATH = '.'
 class Generate:
     def __init__(self):
         self.IDset = set(range(1, 10001))
-        self.numbers = 2000
+        self.numbers = random.randint(1, MAX_NUM) if RANDOM_NUM else MAX_NUM
         self.passengers = set()
         self.generate_passengers()
 
@@ -30,7 +34,7 @@ class Generate:
         passenger_id = random.choice(list(self.IDset))
         self.IDset.remove(passenger_id)
         elevator_id = random.randint(MIN_ELEVATOR_ID, MAX_ELEVATOR_ID)
-        time = random.uniform(1, 10)
+        time = random.uniform(1, MAX_TIME)
         return Passenger(from_floor, to_floor, passenger_id, elevator_id, time)
 
 
