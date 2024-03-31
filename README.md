@@ -8,7 +8,7 @@
 ## 检查
 * 运行“python check.py”以检查结果。如果输出正确，你将收到“pass!”。
 * 如果你想检查其他输入，可以将它们保存到“stdin.txt”中，然后运行“python read_stdin.py”以保存乘客信息，然后运行并检查你的答案。
-# 检查多个输入
+## 检查多个输入
 你可以直接运行“test.bat”来跑MAX_EPOCH条输入数据，这个数字可以在bat文件里面改。
 
 ## Preparations
