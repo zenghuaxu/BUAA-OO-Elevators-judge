@@ -5,7 +5,7 @@ PATH = '.'
 
 
 with open(PATH + '/stdin.txt', 'r') as file:
-    pattern = r'\[(\d+\.\d+)\](\d+)-FROM-(\d+)-TO-(\d+)-BY-(\d+)'
+    pattern = r'\[(\d+\.\d+)\](\d+)-FROM-(\d+)-TO-(\d+)'
     passengers = []
     for line in file:
         match = re.match(pattern, line)
@@ -14,12 +14,10 @@ with open(PATH + '/stdin.txt', 'r') as file:
             passenger_id = int(match.group(2))
             from_floor = int(match.group(3))
             to_floor = int(match.group(4))
-            elevator_id = int(match.group(5))
             passenger = {"time": time,
                          "from_floor": from_floor,
                          "to_floor": to_floor,
-                         "passenger_id": passenger_id,
-                         "elevator_id": elevator_id
+                         "passenger_id": passenger_id
                          }
             passengers.append(passenger)
 
