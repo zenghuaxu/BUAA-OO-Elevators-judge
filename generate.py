@@ -2,21 +2,30 @@ import json
 import random
 
 # Passenger numbers:
-RANDOM_NUM = True
-MAX_NUM = 200
+'''
+request max num, max time and min time
+if want to generate random numbers of requests, set true(default: request_num = max_num)
+'''
+RANDOM_NUM = False
+MAX_NUM = 100
 MIN_TIME = 1.0
-MAX_TIME = 5.0
+MAX_TIME = 15.0
 
 # reset
-RESET_MIN_TIME = 1.0
-RESET_MAX_TIME = 50.0
-RESET_TIMES = 12
+'''
+reset min time, normal reset times and intervals between two requests in ONE elevator
+'''
+RESET_MIN_TIME = 2.0
+RESET_TIMES = 2
+INTERVAL_MAX = 8.0
+INTERVAL_MIN = 4.0
 
 MAX_FLOOR = 11
 MIN_FLOOR = 1
 CAPACITY = 6
 MIN_ELEVATOR_ID = 1
 MAX_ELEVATOR_ID = 1
+
 PATH = '.'
 
 
@@ -39,8 +48,8 @@ class Generate:
         self.passengers = list(self.passengers)
 
     def generate_one_passenger(self):
-        # from_floor = 1
-        # to_floor = random.randint(MIN_FLOOR, MAX_FLOOR)
+        # from_floor = random.randint(1, 3)
+        # to_floor = random.randint(9, 11)
         from_floor = random.randint(MIN_FLOOR, MAX_FLOOR)
         to_floor = random.randint(MIN_FLOOR, MAX_FLOOR)
         while to_floor == from_floor:
@@ -52,15 +61,18 @@ class Generate:
 
     def generate_resets(self):
         for i in range(1, 7):
+            time = RESET_MIN_TIME - random.uniform(INTERVAL_MIN, INTERVAL_MIN + 1)
+            for j in range(RESET_TIMES):
+                time = time + random.uniform(INTERVAL_MIN, INTERVAL_MAX)
+                capacity = random.choice(self.capacity_list)
+                move_time = random.choice(self.move_time_list)
+                reset = Reset(time, i, capacity, move_time)
+                self.resets.add(reset)
+            time = time + random.uniform(INTERVAL_MIN, INTERVAL_MAX)
             capacity = random.choice(self.capacity_list)
             move_time = random.choice(self.move_time_list)
-            times = RESET_TIMES
-            interval = (RESET_MAX_TIME - RESET_MIN_TIME) // times
-            times = (RESET_MAX_TIME - RESET_MIN_TIME) // 0.4 if interval < 0.4 else times
-            interval = (RESET_MAX_TIME - RESET_MIN_TIME) // times
-            for j in range(times):
-                reset = Reset(RESET_MIN_TIME + interval * j, i, capacity, move_time)
-                self.resets.add(reset)
+            floor = random.randint(3, 9)
+            self.resets.add(DCReset(time, i, capacity, move_time, floor))
         self.resets = list(self.resets)
 
     def merge(self):
@@ -93,6 +105,19 @@ class Reset:
 
     def get_request(self):
         return (f"[{self.time:.1f}]RESET-Elevator-{self.elevator_id}-"
+                f"{self.capacity}-{self.move_time}")
+
+
+class DCReset:
+    def __init__(self, time, elevator_id, capacity, move_time, floor):
+        self.time = time
+        self.elevator_id = elevator_id
+        self.capacity = capacity
+        self.move_time = move_time
+        self.floor = floor
+
+    def get_request(self):
+        return (f"[{self.time:.1f}]RESET-DCElevator-{self.elevator_id}-{self.floor}-"
                 f"{self.capacity}-{self.move_time}")
 
 
