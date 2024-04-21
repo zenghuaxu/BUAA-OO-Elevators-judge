@@ -7,18 +7,23 @@ request max num, max time and min time
 if want to generate random numbers of requests, set true(default: request_num = max_num)
 '''
 RANDOM_NUM = False
-MAX_NUM = 100
-MIN_TIME = 1.0
-MAX_TIME = 15.0
+MAX_NUM = 64
+MIN_TIME = 5.0
+MAX_TIME = 5.0
+RANDOM_FLOOR = False
+FROM_FLOOR = 11
+TO_FLOOR = 1
 
 # reset
 '''
 reset min time, normal reset times and intervals between two requests in ONE elevator
 '''
 RESET_MIN_TIME = 2.0
-RESET_TIMES = 2
+RESET_TIMES = 0
 INTERVAL_MAX = 8.0
 INTERVAL_MIN = 4.0
+RANDOM_CHANGE_FLOOR = True
+CHANGE_FLOOR = [9, 9, 9, 9, 9, 9]
 
 MAX_FLOOR = 11
 MIN_FLOOR = 1
@@ -50,8 +55,8 @@ class Generate:
     def generate_one_passenger(self):
         # from_floor = random.randint(1, 3)
         # to_floor = random.randint(9, 11)
-        from_floor = random.randint(MIN_FLOOR, MAX_FLOOR)
-        to_floor = random.randint(MIN_FLOOR, MAX_FLOOR)
+        from_floor = random.randint(MIN_FLOOR, MAX_FLOOR) if RANDOM_FLOOR else FROM_FLOOR
+        to_floor = random.randint(MIN_FLOOR, MAX_FLOOR) if RANDOM_FLOOR else TO_FLOOR
         while to_floor == from_floor:
             to_floor = random.randint(MIN_FLOOR, MAX_FLOOR)
         passenger_id = random.choice(list(self.IDset))
@@ -71,7 +76,7 @@ class Generate:
             time = time + random.uniform(INTERVAL_MIN, INTERVAL_MAX)
             capacity = random.choice(self.capacity_list)
             move_time = random.choice(self.move_time_list)
-            floor = random.randint(3, 9)
+            floor = CHANGE_FLOOR[i - 1] if RANDOM_CHANGE_FLOOR else random.randint(3, 9)
             self.resets.add(DCReset(time, i, capacity, move_time, floor))
         self.resets = list(self.resets)
 
@@ -124,8 +129,6 @@ class DCReset:
 def main():
     generator = Generate()
     items = generator.items
-    for item in items:
-        print(item.get_request())
     with open(PATH + '/stdin.txt', 'w') as file:
         for item in items:
             file.write(item.get_request())
